@@ -22,8 +22,8 @@ foreach ($dir->list() as $file) {
 echo "</ul>";
 
 // files
-$dir->file("file.txt","optional: set file content") // create a file within this directory
-$dir->file("file.txt","update file content") // update contents of a file within this directory
+$dir->file("file.txt","set file content") // create a file within this directory, optional: set file content
+$dir->file("file.txt","update file content") // if the file already exists, you can use the same method to update a files contents
 $dir->file("file.txt"); // get contents of file within this directory
 
 // directories
