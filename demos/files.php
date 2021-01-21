@@ -1,7 +1,7 @@
 <?php
 
-$file = new Filesystem:getInstance("path/to/file.ext"); // create/get instance of file, making it the cwd or path
-// Subject to change: pecifying a file as the cwd or path might be confusing, but allows you to get info on a file, change or get the contents of it, etc.
+$file = new Filesystem:getInstance("path/to/file.ext"); // create/get instance of file, making it the current path
+// Subject to change: specifying a file as the path or path might be confusing, but allows you to get info on a file, change or get the contents of it, etc.
 
 // get info about file
 $info = $file->info();
@@ -12,8 +12,8 @@ $size = $file->size(); // get raw size of file in bytes
 $formatted_size = $file->size(true); // get formatted size of file (eg. 256 GB)
 echo "This file is exactly $size bytes; sorry does that not make sense? This file is about $formatted_size.";
 
-// the following only applies if you set the cwd as a file and not a directory
+// the following only applies if you set the path as a file and not a directory
 $contents = $file->file(); // returns contents of file
-$file->file("Change file contents"); // changes the content of the current file, this only works if the cwd is a file
+$file->file("Change file contents"); // changes the content of the current file, this only works if the path is a file
 
-$file->delete(); // deletes the file; if you set the cwd as a file and you delete it, the instance is unset.
+$file->delete(); // deletes the file; WARNING: this will unset the instance.

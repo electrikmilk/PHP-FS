@@ -21,7 +21,7 @@ foreach ($dir->list() as $file) {
 }
 echo "</ul>";
 
-$dir->delete(); // deletes the cwd, WARNING: this will unset the instance.
-$dir->delete("file_inside_this_directory.txt"); // deletes specified file within the cwd
-$dir->delete("directory_inside_this_directory"); // deletes specified directory within the cwd
-$dir->delete("directory_inside_this_directory/subdirectory_inside_this_directory"); // deletes specified subdirectory of a directory within the cwd, you can obviously just keep going deeper into subdirs if you'd like
+$dir->delete(); // deletes the directory; WARNING: this will unset the instance.
+$dir->delete("file.txt"); // deletes specified file within the path
+$dir->delete("directory"); // deletes specified directory within the path
+$dir->delete("directory/subdirectory"); // you can obviously just keep going deeper if you'd like
