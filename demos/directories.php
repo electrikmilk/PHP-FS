@@ -12,7 +12,7 @@ $size = $dir->size(); // get raw size of directory in bytes
 $formatted_size = $dir->size(true); // get formatted size of directory (eg. 256 GB)
 echo "This folder is exactly $size bytes; sorry does that not make sense? This folder is about $formatted_size.";
 
-// list files in a directory
+// list files in this directory
 echo "<ul>";
 foreach ($dir->list() as $file) {
   $f = new Filesystem("$path/$file");
@@ -20,6 +20,15 @@ foreach ($dir->list() as $file) {
   echo "<li>$file &mdash; {$info['type']} &mdash; {$f->size()}</li>";
 }
 echo "</ul>";
+
+// files
+$dir->file("file.txt","optional: set file content") // create a file within this directory
+$dir->file("file.txt","update file content") // update contents of a file within this directory
+$dir->file("file.txt"); // get contents of file within this directory
+
+// directories
+$dir->dir("directory") // create a directory within this directory
+$dir->list("directory") // returns array of files within specified directory
 
 $dir->delete(); // deletes the directory; WARNING: this will unset the instance.
 $dir->delete("file.txt"); // deletes specified file within the path

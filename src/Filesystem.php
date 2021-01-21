@@ -116,11 +116,13 @@ class Filesystem {
       return $count;
     }
   }
-  public function list() {
-    if(!is_dir($this->path))return;
+  public function list($name) {
+    $path = $this->path;
+    if($name)$path = "$this->path/$name";
+    if(!is_dir($path))return;
     else {
       $folder_array = array();
-      if ( $handle = opendir( $this->path ) ) {
+      if ( $handle = opendir( $path ) ) {
         while ( false !== ( $entry = readdir( $handle ) ) ) {
           if ( $entry != "." && $entry != ".." && $entry[0] !== "." )array_push( $folder_array, $entry );
         }
