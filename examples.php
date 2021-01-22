@@ -21,7 +21,7 @@ NULL = meaning something does or does not exist
 */
 
 $files->path("set/new/path"); // change the path for this instance.
-$files->info(); // returns array of info about file or directory, eg. {name:"filename",base:"basename.ext",ext:".extension",dir:"directory",mime:"mime_content_type",type:"file|folder"}.
+$files->info($name); // returns array of info about file or directory, pass an argument to instead get info about a file or directory in path.
 $files->size($format); // byte count of current file or directory. $format (bool): true will return formatted byte count (eg. 256 KB), false will return raw byte count.
 $files->count(); // numbers of files and folder in a directory, this includes subfolders and files.
 $files->list(); // returns array of files list at set directory, returns NULL if directory is empty.
