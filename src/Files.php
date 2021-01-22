@@ -162,6 +162,17 @@ class Files {
       return ( count( scandir( $path ) ) == 2 );
     }
   }
+  public function rename($name,$newname) {
+    if(!$name || !$newname)return;
+    else {
+      $path = "$this->path/$name";
+      $newpath = "$this->path/$newname";
+      if(file_exists($path) && !file_exists($newpath)) {
+        if(rename($path,$newpath))return true;
+        else return false;
+      } else return NULL;
+    }
+  }
   public function copy($item,$newpath) {
     $path = $this->path;
     if(is_dir($this->path) && $item)$path = "$path/$item";
