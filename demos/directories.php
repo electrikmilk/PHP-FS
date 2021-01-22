@@ -31,7 +31,7 @@ $dir->dir("directory"); // create a directory within this directory
 $dir->dir("directory"); // if the directory already exists, returns array of files within specified directory
 $dir->dir(); // returns array of files within current path
 
-$dir->delete(); // deletes the directory; WARNING: this will unset the instance.
+$dir->delete(); // deletes the directory WARNING: deletes files and subdirectories within the directory, this will unset the instance.
 $dir->delete("file.txt"); // deletes specified file within the path
 $dir->delete("directory"); // deletes specified directory within the path
 $dir->delete("directory/subdirectory"); // you can obviously just keep going deeper if you'd like

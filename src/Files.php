@@ -5,18 +5,18 @@
  * file 'LICENSE', which is part of this source code package.
  */
 
-// TODO: make move and copy functions
-
 class Files {
   private static $instance = null;
   private $path;
   private function __construct($path) {
     try {
-      // if(!$path)throw new TypeError( "Path not specified." );
+      // if(!$path)throw new Exception( "Path not specified." );
       if(!$path)$path = __DIR__;
-      if(!file_exists($path))throw new TypeError( "Path '$path' does not exist" );
+      if(!file_exists($path))throw new Exception( "Path '$path' does not appear to exist." );
+      if(!is_readable($path))throw new Exception( "Path '$path' does not appear to be readable." );
+      if(!is_writeable($path))trigger_error("Path '$path' appears to be read-only.",E_USER_NOTICE);
       $this->path = $path;
-    } catch(TypeError $e) {
+    } catch(Exception $e) {
       die($e);
     }
   }
@@ -28,10 +28,13 @@ class Files {
   }
   public function path($path) {
     try {
-      if(!$path)throw new TypeError( "Path not specified." );
-      if(!file_exists($path))throw new TypeError( "Path '$path' does not exist" );
+      // if(!$path)throw new Exception( "Path not specified." );
+      if(!$path)$path = __DIR__;
+      if(!file_exists($path))throw new Exception( "Path '$path' does not appear to exist." );
+      if(!is_readable($path))throw new Exception( "Path '$path' does not appear to be readable." );
+      if(!is_writeable($path))trigger_error("Path '$path' appears to be read-only.",E_USER_NOTICE);
       $this->path = $path;
-    } catch(TypeError $e) {
+    } catch(Exception $e) {
       die($e);
     }
   }
@@ -40,17 +43,24 @@ class Files {
       if(!$name)return;
       else {
         $path = "$this->path/$name";
-        if(!file_exists($path) || file_exists($path) && $content) {
+        if(!file_exists($path) || file_exists($path) && is_writeable($path) && $content) {
           if(file_put_contents($path,$content))return true;
           else return false;
-        } else return file_get_contents($path);
+        } else if(!is_writeable($path)) {
+          return false;
+        } else {
+          if(is_readable($path))return file_get_contents($path);
+          else return false;
+        }
       }
     } else {
-      if($name) {
-        $content = $name;
-        if(file_put_contents($this->path,$content))return true;
-        else return false;
-      } else return file_get_contents($$this->path);
+      $content = $name;
+      if($content) {
+        if(is_writeable($this->path)) {
+          if(file_put_contents($this->path,$content))return true;
+          else return false;
+        } else return false;
+      } else return file_get_contents($this->path);
     }
   }
   public function dir($name) {
@@ -63,29 +73,29 @@ class Files {
     } else {
       if(!is_dir($path))return;
       else {
-        $folder_array = array();
-        if ( $handle = opendir( $path ) ) {
-          while ( false !== ( $entry = readdir( $handle ) ) ) {
-            if ( $entry != "." && $entry != ".." && $entry[0] !== "." )array_push( $folder_array, $entry );
+        if(is_readable($path)) {
+          $folder_array = array();
+          if ( $handle = opendir( $path ) ) {
+            while ( false !== ( $entry = readdir( $handle ) ) ) {
+              if ( $entry != "." && $entry != ".." && $entry[0] !== "." )array_push( $folder_array, $entry );
+            }
+            closedir( $handle );
           }
-          closedir( $handle );
-        }
-        if ( empty( $folder_array ) ) return NULL;
-        else return $folder_array;
+          if ( empty( $folder_array ) ) return NULL;
+          else return $folder_array;
+        } else return false;
       }
     }
   }
   public function info() { // size() and count() not included for speed
     $info = array();
     $parts = pathinfo($this->path);
-    $type = "file";
-    if(is_dir($this->path))$type = "folder";
     $info['name'] = $parts['filename'];
     $info['base'] = $parts['basename'];
     $info['ext'] = $parts['extension'];
     $info['dir'] = $parts['dirname'];
     $info['mime'] = mime_content_type($this->path);
-    $info['type'] = $type;
+    $info['type'] = filetype($this->path);
     return $info;
   }
   public function size($format = false) {
@@ -148,9 +158,25 @@ class Files {
     if($name)$path = "$path/$name";
     if(!is_dir($path))return;
     else {
-      if ( !is_readable( $path ) ) return NULL;
+      if ( !is_readable( $path ) ) return false;
       return ( count( scandir( $path ) ) == 2 );
     }
+  }
+  public function copy($name,$newpath) {
+    $path = $this->path;
+    if($name)$path = "$path/$name";
+    if(file_exists($path))return $this->transfer("copy",$path,$newpath);
+    else return NULL;
+  }
+  public function move($name) {
+    $path = $this->path;
+    if($name)$path = "$path/$name";
+    if(file_exists($path))return $this->transfer("move",$path,$newpath);
+    else return NULL;
+  }
+  private function transfer($action,$path,$newpath) {
+    if($action === "copy")copy($path,$newpath);
+    else rename($path,$newpath);
   }
   public function delete($name) {
     $path = $this->path;
