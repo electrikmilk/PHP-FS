@@ -1,6 +1,4 @@
 <?php
-/* THIS IS ALL SUBJECT TO CHANGE AS THIS CLASS IS WIP */
-
 // Basic instantiate
 $files = new Filesystem("path/to/files"); // This will create a new Filesystem instance and set the path (current working directory).
 
@@ -27,5 +25,10 @@ $files->count(); // numbers of files and folder in a directory, this includes su
 $files->list(); // returns array of files list at set directory, returns NULL if directory is empty.
 $files->empty($name); // if $name, returns true|false based on if directory at path/$name is empty, if no $name, returns true|false based on if path is empty.
 $files->file($name); // if file does not exist, creates file at path/$name; if file does exist, returns file content.
+$files->file($name,$newcontent); // change content of existing file or create new file with content
+$files->copy($item); // copy file or directory in current path (will append " copy")
+$files->copy($item,$newpath); // copy file or directory from path to new path
+$files->move($item,$newpath); // move file or directory from path to new path
+$files->rename($item,$newname); // change name of file or directory to $newname
 $files->dir($name); // creates directory at path/$name if it does not already exist.
 $files->delete($name); // deletes file or directory at path/$name, WARNING: deletes all files & subdirectories within a directory; $name argument only applies if current path is a directory.
