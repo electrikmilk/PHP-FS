@@ -7,7 +7,7 @@
 
 // TODO: make move and copy functions
 
-class Filesystem {
+class Files {
   private static $instance = null;
   private $path;
   private function __construct($path) {
@@ -54,14 +54,25 @@ class Filesystem {
     }
   }
   public function dir($name) {
-    if(!is_dir($this->path))return;
-    else if(!$name)return;
-    else {
-      $path = "$this->path/$name";
-      if ( !file_exists( $path ) ) {
-        if(mkdir( $path, 0777, true ))return true;
-        else return false;
-      } else return NULL;
+    $path = $this->path;
+    if($name)$path = "$path/$name";
+    if ( !file_exists( $path ) ) {
+      if(!$name)return;
+      if(mkdir( $path, 0777, true ))return true;
+      else return false;
+    } else {
+      if(!is_dir($path))return;
+      else {
+        $folder_array = array();
+        if ( $handle = opendir( $path ) ) {
+          while ( false !== ( $entry = readdir( $handle ) ) ) {
+            if ( $entry != "." && $entry != ".." && $entry[0] !== "." )array_push( $folder_array, $entry );
+          }
+          closedir( $handle );
+        }
+        if ( empty( $folder_array ) ) return NULL;
+        else return $folder_array;
+      }
     }
   }
   public function info() { // size() and count() not included for speed
@@ -116,22 +127,22 @@ class Filesystem {
       return $count;
     }
   }
-  public function list($name) {
-    $path = $this->path;
-    if($name)$path = "$this->path/$name";
-    if(!is_dir($path))return;
-    else {
-      $folder_array = array();
-      if ( $handle = opendir( $path ) ) {
-        while ( false !== ( $entry = readdir( $handle ) ) ) {
-          if ( $entry != "." && $entry != ".." && $entry[0] !== "." )array_push( $folder_array, $entry );
-        }
-        closedir( $handle );
-      }
-      if ( empty( $folder_array ) ) return NULL;
-      else return $folder_array;
-    }
-  }
+  // public function list($name) {
+  //   $path = $this->path;
+  //   if($name)$path = "$this->path/$name";
+  //   if(!is_dir($path))return;
+  //   else {
+  //     $folder_array = array();
+  //     if ( $handle = opendir( $path ) ) {
+  //       while ( false !== ( $entry = readdir( $handle ) ) ) {
+  //         if ( $entry != "." && $entry != ".." && $entry[0] !== "." )array_push( $folder_array, $entry );
+  //       }
+  //       closedir( $handle );
+  //     }
+  //     if ( empty( $folder_array ) ) return NULL;
+  //     else return $folder_array;
+  //   }
+  // }
   public function empty($name = false) {
     $path = $this->path;
     if($name)$path = "$path/$name";

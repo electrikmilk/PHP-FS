@@ -22,13 +22,14 @@ foreach ($dir->list() as $file) {
 echo "</ul>";
 
 // files
-$dir->file("file.txt","set file content") // create a file within this directory, optional: set file content
-$dir->file("file.txt","update file content") // if the file already exists, you can use the same method to update a files contents
+$dir->file("file.txt","set file content"); // create a file within this directory, optional: set file content
+$dir->file("file.txt","update file content"); // if the file already exists, you can use the same method to update a files contents
 $dir->file("file.txt"); // get contents of file within this directory, you can also use this to check if a file exists in the current directory
 
 // directories
-$dir->dir("directory") // create a directory within this directory
-$dir->list("directory") // returns array of files within specified directory
+$dir->dir("directory"); // create a directory within this directory
+$dir->dir("directory"); // if the directory already exists, returns array of files within specified directory
+$dir->dir(); // returns array of files within current path
 
 $dir->delete(); // deletes the directory; WARNING: this will unset the instance.
 $dir->delete("file.txt"); // deletes specified file within the path
