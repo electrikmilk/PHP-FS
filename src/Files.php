@@ -162,21 +162,55 @@ class Files {
       return ( count( scandir( $path ) ) == 2 );
     }
   }
-  public function copy($name,$newpath) {
+  public function copy($item,$newpath) {
     $path = $this->path;
-    if($name)$path = "$path/$name";
+    if(is_dir($this->path) && $item)$path = "$path/$item";
     if(file_exists($path))return $this->transfer("copy",$path,$newpath);
     else return NULL;
   }
-  public function move($name) {
+  public function move($item,$newpath) {
     $path = $this->path;
-    if($name)$path = "$path/$name";
+    if($item)$path = "$path/$item";
     if(file_exists($path))return $this->transfer("move",$path,$newpath);
     else return NULL;
   }
   private function transfer($action,$path,$newpath) {
-    if($action === "copy")copy($path,$newpath);
-    else rename($path,$newpath);
+    if(is_file($path)) {
+      if($action === "copy") {
+        if(!$newpath) {
+          $info = pathinfo($path);
+          $name = $info['basename'];
+          $newname = "{$info['filename']} copy.{$info['extension']}";
+          $newpath = str_replace($name,$newname,$path);
+        }
+        if($path !== $newpath) {
+          if(copy($path,$newpath))return true;
+          else return false;
+        } else return false;
+      } else if($newpath && $path !== $newpath) {
+        if(rename($path,$newpath))return true;
+        else return false;
+      } else return false;
+    } else return $this->copy_dir($path,$newpath);
+  }
+  private function copy_dir($path,$newpath) { // not properly tested yet, not sure if this will work correctly
+    $dir = opendir( $path );
+    @mkdir( $newpath );
+    while ( false !== ( $file = readdir( $dir ) ) ) {
+      if ( ( $file != '.' ) && ( $file != '..' ) ) {
+  			$name = $file;
+  			if ( is_dir("$path/$file") ) {
+  				if($path === $newpath)$newname = "$file copy";
+  				$this->copy_dir( "$path/$file", "$newpath/$newname" );
+  			} else {
+          $info = pathinfo($path);
+          if($path === $newpath)$newname = "{$info['filename']} copy.{$info['extension']}";
+  				copy( "$path/$file", "$newpath/$newname" );
+  			}
+      }
+    }
+    closedir( $dir );
+    return true;
   }
   public function delete($name) {
     $path = $this->path;
