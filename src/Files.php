@@ -10,7 +10,6 @@ class Files {
   private $path;
   private function __construct($path) {
     try {
-      // if(!$path)throw new Exception( "Path not specified." );
       if(!$path)$path = __DIR__;
       if(!file_exists($path))throw new Exception( "Path '$path' does not appear to exist." );
       if(!is_readable($path))throw new Exception( "Path '$path' does not appear to be readable." );
@@ -28,7 +27,6 @@ class Files {
   }
   public function path($path) {
     try {
-      // if(!$path)throw new Exception( "Path not specified." );
       if(!$path)$path = __DIR__;
       if(!file_exists($path))throw new Exception( "Path '$path' does not appear to exist." );
       if(!is_readable($path))throw new Exception( "Path '$path' does not appear to be readable." );
@@ -63,7 +61,7 @@ class Files {
       } else return file_get_contents($this->path);
     }
   }
-  public function dir($name) {
+  public function dir($name,$time,$order = true) {
     $path = $this->path;
     if($name)$path = "$path/$name";
     if ( !file_exists( $path ) ) {
@@ -74,28 +72,55 @@ class Files {
       if(!is_dir($path))return;
       else {
         if(is_readable($path)) {
-          $folder_array = array();
+          $files = array();
           if ( $handle = opendir( $path ) ) {
             while ( false !== ( $entry = readdir( $handle ) ) ) {
-              if ( $entry != "." && $entry != ".." && $entry[0] !== "." )array_push( $folder_array, $entry );
+              if ( $entry != "." && $entry != ".." && $entry[0] !== "." ) {
+                switch ($time) {
+                  case "m":
+                    $time = filemtime("$path/$entry");
+                    break;
+                  case "c":
+                    $time = filectime("$path/$entry");
+                    break;
+                  case "a":
+                    $time = fileatime("$path/$entry");
+                    break;
+                  default:
+                    $time = filemtime("$path/$entry");
+                }
+                $mod = date("Y-m-d H:i:s",$time);
+                $files[$mod] = $this->info("$name/$entry");
+              }
             }
             closedir( $handle );
           }
-          if ( empty( $folder_array ) ) return NULL;
-          else return $folder_array;
+          if ( empty( $files ) ) return NULL;
+          else {
+            if($order === true)ksort($files);
+            else krsort($files);
+            return $files;
+          }
         } else return false;
       }
     }
   }
-  public function info() { // size() and count() not included for speed
+  public function info($name) { // size() and count() not included for speed
+    $path = $this->path;
+    if($name)$path = "$path/$name";
     $info = array();
-    $parts = pathinfo($this->path);
+    $parts = pathinfo($path);
     $info['name'] = $parts['filename'];
-    $info['base'] = $parts['basename'];
-    $info['ext'] = $parts['extension'];
+    $info['type'] = filetype($path);
+    if(is_file($path)) {
+      $info['mime'] = mime_content_type($path);
+      $info['base'] = $parts['basename'];
+      $info['ext'] = $parts['extension'];
+    }
     $info['dir'] = $parts['dirname'];
-    $info['mime'] = mime_content_type($this->path);
-    $info['type'] = filetype($this->path);
+    $info['mod'] = filemtime($path);
+    $info['change'] = filectime($path);
+    $info['access'] = fileatime($path);
     return $info;
   }
   public function size($format = false) {
@@ -137,22 +162,6 @@ class Files {
       return $count;
     }
   }
-  // public function list($name) {
-  //   $path = $this->path;
-  //   if($name)$path = "$this->path/$name";
-  //   if(!is_dir($path))return;
-  //   else {
-  //     $folder_array = array();
-  //     if ( $handle = opendir( $path ) ) {
-  //       while ( false !== ( $entry = readdir( $handle ) ) ) {
-  //         if ( $entry != "." && $entry != ".." && $entry[0] !== "." )array_push( $folder_array, $entry );
-  //       }
-  //       closedir( $handle );
-  //     }
-  //     if ( empty( $folder_array ) ) return NULL;
-  //     else return $folder_array;
-  //   }
-  // }
   public function empty($name = false) {
     $path = $this->path;
     if($name)$path = "$path/$name";
@@ -213,7 +222,7 @@ class Files {
   }
   private function copy_dir($path,$newpath) { // not properly tested yet, not sure if this will work correctly
     $dir = opendir( $path );
-    mkdir( $newpath );
+    @mkdir( $newpath );
     while ( false !== ( $file = readdir( $dir ) ) ) {
       if ( ( $file != '.' ) && ( $file != '..' ) ) {
   			$name = $file;
@@ -231,7 +240,7 @@ class Files {
           if($path === $newpath) {
             $filename = $info['filename'];
             $ext = $info['extension'];
-            $dir = str_replace($basename,"",$path);
+            $dir = str_replace($basename,"",$newpath);
             $name = "$filename";
             while(file_exists("$dir/$name.$ext")) {
               $name .= " copy";
@@ -245,23 +254,31 @@ class Files {
     closedir( $dir );
     return true;
   }
-  public function delete($name) {
+  public function delete($name,$safe = true) {
     $path = $this->path;
     if(is_dir($path)) {
-      if($name)$path = "$this->path/$name";
-      if ( substr( $path, strlen( $path ) - 1, 1 ) != '/' )$path .= '/';
-      $files = glob( $path . '*', GLOB_MARK );
-      foreach ( $files as $file ) {
-        if ( is_dir( $file ) )self::delete( $file );
-        else unlink( $file );
+      if($safe === false) {
+        if($name)$path = "$this->path/$name";
+        if ( substr( $path, strlen( $path ) - 1, 1 ) != '/' )$path .= '/';
+        $files = glob( $path . '*', GLOB_MARK );
+        foreach ( $files as $file ) {
+          if ( is_dir( $file ) )self::delete( $file );
+          else unlink( $file );
+        }
+        if(rmdir($path))return true;
+        else return false;
+      } else {
+        if(rmdir($path))return true;
+        else return false;
       }
-      if(rmdir($path))return true;
-      else return false;
     } else {
       if(unlink($path))return true;
       else return false;
     }
     // if we just deleted what was $this->path, this instance needs to be unset
     if(!file_exists($this->path))unset($this);
+  }
+  public function destroy() {
+    unset($this); // destroy the instance
   }
 }

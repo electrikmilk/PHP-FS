@@ -1,7 +1,7 @@
 <?php
 
 $path = "path/to/dir";
-$dir = new Filesystem:getInstance($path);
+$dir = new Files:getInstance($path);
 
 // get count of files and folders in directory
 $count = $dir->count();
@@ -15,7 +15,7 @@ echo "This folder is exactly $size bytes; sorry does that not make sense? This f
 // list files in this directory
 echo "<ul>";
 foreach ($dir->list() as $file) {
-  $f = new Filesystem("$path/$file");
+  $f = new Files("$path/$file");
   $info = $f->info();
   echo "<li>$file &mdash; {$info['type']} &mdash; {$f->size()}</li>";
 }
