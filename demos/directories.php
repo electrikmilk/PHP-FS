@@ -4,20 +4,18 @@ $path = "path/to/dir";
 $dir = new Files:getInstance($path);
 
 // get count of files and folders in directory
-$count = $dir->count();
+$count = $dir->count("directory");
 echo "This directory has {$count['files']} files and {$count['folders']} folders. Total is {$count['total']} files and folders.<br/>";
 
 // get size of directory
-$size = $dir->size(); // get raw size of directory in bytes
-$formatted_size = $dir->size(true); // get formatted size of directory (eg. 256 GB)
+$size = $dir->size("directory"); // get raw size of directory in bytes
+$formatted_size = $dir->size("directory",true); // get formatted size of directory (eg. 256 GB)
 echo "This folder is exactly $size bytes; sorry does that not make sense? This folder is about $formatted_size.";
 
 // list files in this directory
 echo "<ul>";
 foreach ($dir->list() as $file) {
-  $f = new Files("$path/$file");
-  $info = $f->info();
-  echo "<li>$file &mdash; {$info['type']} &mdash; {$f->size()}</li>";
+  echo "<li>Name: {$file['name']}, Type: {$file['type']}</li>";
 }
 echo "</ul>";
 

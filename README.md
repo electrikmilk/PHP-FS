@@ -4,7 +4,7 @@ Simple PHP class that takes care of some of the heavy lifting of managing files.
 
 Please let me know if you have suggestions on how the class can be better. I'm making this because I like making filesystem related code and want to practice, but also want to try and make a truly helpful class I and others can benefit from using in the future.
 
-DISCLAIMER: I wouldn't currently incorporate this class into any project until it has been fully tested plus it's WIP.
+**DISCLAIMER:** This class is WIP. I wouldn't currently incorporate this class into any project until it has been fully tested. I will remove this disclaimer when that time comes.
 
 # Usage
 
@@ -14,23 +14,23 @@ Create class instance and set the path or current working directory.
 $files = new Files::getInstance("path/to/files");
 ```
 
-It's recommended you instantiate using `getInstance()` as it will return the existing instance if we've already created an instance with this path.
+It's recommended you instantiate using `getInstance()` as it will return the existing instance if you've already created an instance with this path.
 
-*You can set the path as a file, but it's generally recommended to set it as a directory as you have access to more methods and it's less confusing.*
+You can set the path as a file, but it's generally recommended to set it as a directory as you have access to more methods and it's less confusing.
 
 Specifying no path will default path to `__DIR__` (cwd of script that class is included on).
 
-## Instance will die() and not be instantiated if...
+### Instance will `die()` and not be instantiated if...
 - Path does not appear to exist
 - Path does not appear to be readable
 
-**The class will still instantiate if path is read-only. You will get a NOTICE if so, and methods that write will return false.**
+*The class will still instantiate if path is read-only. You will get a NOTICE if so, and methods that write will return false.*
 
-## All methods are set to return requested data, a boolean, or NULL:
+### All methods are set to return requested data, a boolean, or NULL:
 - data (string or array) = data you requested using file(), info(), or dir() for example
 - bool = true meaning something went right, false meaning something went wrong
-- NULL = something already exists or does not exist (eg. rename() will return NULL if a file with that name exists, copy() will return NULL if path to copy from doesn't exist)
-empty = usually means you ran a method on someting it wasn't meant for (eg. count() is for directories not files)
+- NULL = something already exists or does not exist
+- empty = usually means you ran a method on someting it wasn't meant for (eg. count() is for directories not files)
 
 <hr/>
 
@@ -40,8 +40,8 @@ However, most methods don't require an argument and can just use the current pat
 
 ```PHP
 $files->info(); // use current path
-$files->info("file.txt"); // specify file in current path
-$files->info("directory"); // specify directory in current path
+$files->info("file.txt"); // use file in current path
+$files->info("directory"); // use directory in current path
 ```
 
 Methods lead double lives depending on if a file or directory exists:
@@ -51,7 +51,7 @@ $files->file("file.txt"); // create file
 $files->file("file2.txt","content"); // create file with content
 $files->dir("directory"); // create directory
 
-// ...and now that file.txt and directory exist...
+// ...and now that they exist...
 
 $files->file("file.txt"); // read existing file
 $files->file("file2.txt","new content"); // change contents of existing file

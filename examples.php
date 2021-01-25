@@ -78,12 +78,14 @@ $files->dir($path,$time,$order);
 
 /*
 size()
-arguments: $format (bool), $path (optional)
+directory arguments: $path, $format (bool)
+file arguments: $format (bool)
 
 (if $format true): returns raw byte count of cwd or $path (eg. 10240)
 (if $format false): returns formatted size of cwd or $path (eg. 256 KB)
 */
-$files->size($format,$path);
+$files->size($path,$format); // if cwd is directory
+$files->size($format); // if cwd is file
 
 /*
 count()

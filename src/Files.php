@@ -123,36 +123,47 @@ class Files {
     $info['access'] = fileatime($path);
     return $info;
   }
-  public function size($format = false) {
-    $bytes = filesize($this->path);
-    if($format === true) { // make it readable
-      if ( $bytes >= 1073741824 )$bytes = number_format( $bytes / 1073741824, 2 ) . ' GB';
-    	elseif ( $bytes >= 1048576 )$bytes = number_format( $bytes / 1048576, 2 ) . ' MB';
-    	elseif ( $bytes >= 1024 )$bytes = number_format( $bytes / 1024, 2 ) . ' KB';
-    	elseif ( $bytes > 1 )$bytes = $bytes . ' bytes';
-    	elseif ( $bytes == 1 )$bytes = $bytes . ' byte';
-    	else $bytes = '0 bytes';
+  public function size($name, $format = false) {
+    if($name === true && is_file($this->path)) {
+      unset($name);
+      $format = true;
     }
-  	return $bytes;
+    $path = $this->path;
+    if($name)$path = "$path/$name";
+    if($name && !is_dir($this->path))return;
+    else {
+      $bytes = filesize($path);
+      if($format === true) { // make it readable
+        if ( $bytes >= 1073741824 )$bytes = number_format( $bytes / 1073741824, 2 ) . ' GB';
+      	elseif ( $bytes >= 1048576 )$bytes = number_format( $bytes / 1048576, 2 ) . ' MB';
+      	elseif ( $bytes >= 1024 )$bytes = number_format( $bytes / 1024, 2 ) . ' KB';
+      	elseif ( $bytes > 1 )$bytes = $bytes . ' bytes';
+      	elseif ( $bytes == 1 )$bytes = $bytes . ' byte';
+      	else $bytes = '0 bytes';
+      }
+    	return $bytes;
+    }
   }
-  public function count() {
-    if(!is_dir($this->path))return;
+  public function count($name) {
+    $path = $this->path;
+    if($name)$path = "$path/$name";
+    if(!is_dir($path))return;
     else {
       $count[ 'files' ] = 0;
       $count[ 'folders' ] = 0;
       $count[ 'total' ] = 0;
-      $path = realpath( $this->path );
-      $dir = opendir( $this->path );
+      $path = realpath( $path );
+      $dir = opendir( $path );
       while ( ( $file = readdir( $dir ) ) !== false ) {
         if ( $file != "." && $file != ".." ) {
-          if ( is_file( "$this->path/$file" ) ) {
+          if ( is_file( "$path/$file" ) ) {
             $count[ 'files' ]++;
             $count[ 'total' ]++;
           }
-          if ( is_dir( "$this->path/$file" ) ) {
+          if ( is_dir( "$path/$file" ) ) {
             $count[ 'folders' ]++;
             $count[ 'total' ]++;
-            $counts = $this->count( "$this->path/$file" );
+            $counts = $this->count( "$path/$file" );
             $count[ 'folders' ] += $counts[ 'folders' ];
             $count[ 'files' ] += $counts[ 'files' ];
           }
