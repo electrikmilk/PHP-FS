@@ -1,6 +1,6 @@
 # PHP Files Class
 
-Simple PHP class that takes care of some of the heavy lifting of managing files. This is particularly useful when building a file manager backend.
+PHP class that takes care of some of the heavy lifting of managing files. This is particularly useful when building a file manager backend.
 
 Please let me know if you have suggestions on how the class can be better. I'm making this because I like making filesystem related code and want to practice, but also want to try and make a truly helpful class I and others can benefit from using in the future.
 
