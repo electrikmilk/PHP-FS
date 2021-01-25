@@ -1,6 +1,6 @@
 <?php
 // Create instance and set path.
-$files = new Files::getInstance("path/to/files");
+$files = Files::getInstance("path/to/files");
 
 /* CLASS METHODS */
 

@@ -1,7 +1,7 @@
 <?php
 
 $path = "path/to/dir";
-$dir = new Files:getInstance($path);
+$dir = Files::getInstance($path);
 
 // get count of files and folders in directory
 $count = $dir->count("directory");

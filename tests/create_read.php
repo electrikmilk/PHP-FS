@@ -1,7 +1,7 @@
 <?php
 require_once "../src/Files.php";
 include_once "reset.php";
-$files = new Files::getInstance("files");
+$files = Files::getInstance("files");
 
 $files->dir("directory/new_dir");
 $files->file("new_file.txt","content");

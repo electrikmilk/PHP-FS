@@ -4,7 +4,7 @@ PHP class that takes care of some of the heavy lifting of managing files. This i
 
 Please let me know if you have suggestions on how the class can be better. I'm making this because I like making filesystem related code and want to practice, but also want to try and make a truly helpful class I and others can benefit from using in the future.
 
-**DISCLAIMER:** This class is WIP. I wouldn't currently incorporate this class into any project until it has been fully tested. I will remove this disclaimer when that time comes.
+**DISCLAIMER:** This class is WIP. I wouldn't recommend using this class into any project until it has been fully tested. I will remove this disclaimer when it has.
 
 # Usage
 
@@ -13,8 +13,6 @@ Create class instance and set the path or current working directory.
 ```PHP
 $files = new Files::getInstance("path/to/files");
 ```
-
-It's recommended you instantiate using `getInstance()` as it will return the existing instance if you've already created an instance with this path.
 
 You can set the path as a file, but it's generally recommended to set it as a directory as you have access to more methods and it's less confusing.
 

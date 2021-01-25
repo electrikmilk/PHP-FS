@@ -1,6 +1,6 @@
 <?php
 
-$file = new Files:getInstance("path/to/file.txt"); // create/get instance of file, making it the current path
+$file = Files::getInstance("path/to/file.txt"); // create/get instance of file, making it the current path
 // Subject to change: specifying a file as the path or path might be confusing, but allows you to get info on a file, change or get the contents of it, etc.
 
 // get info about file
