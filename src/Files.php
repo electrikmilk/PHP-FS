@@ -185,13 +185,20 @@ class Files {
     if(file_exists($path))return $this->transfer("move",$path,$newpath);
     else return NULL;
   }
-  private function transfer($action,$path,$newpath) {
+  private function transfer($action,$path,$newpath) { // $files->copy(); $files->copy("file.txt");
     if(is_file($path)) {
       if($action === "copy") {
         if(!$newpath) {
           $info = pathinfo($path);
-          $name = $info['basename'];
-          $newname = "{$info['filename']} copy.{$info['extension']}";
+          $basename = $info['basename'];
+          $filename = $info['filename'];
+          $ext = $info['extension'];
+          $dir = str_replace($basename,"",$path);
+          $name = "$filename";
+          while(file_exists("$dir/$name.$ext")) {
+            $name .= " copy";
+          }
+          $newname = "$name.$ext";
           $newpath = str_replace($name,$newname,$path);
         }
         if($path !== $newpath) {
@@ -206,16 +213,31 @@ class Files {
   }
   private function copy_dir($path,$newpath) { // not properly tested yet, not sure if this will work correctly
     $dir = opendir( $path );
-    @mkdir( $newpath );
+    mkdir( $newpath );
     while ( false !== ( $file = readdir( $dir ) ) ) {
       if ( ( $file != '.' ) && ( $file != '..' ) ) {
   			$name = $file;
   			if ( is_dir("$path/$file") ) {
-  				if($path === $newpath)$newname = "$file copy";
+  				if($path === $newpath) {
+            $newname = "$file copy";
+            while(file_exists("$newpath/$newname")) {
+              $newname .= " copy";
+            }
+          }
   				$this->copy_dir( "$path/$file", "$newpath/$newname" );
   			} else {
           $info = pathinfo($path);
-          if($path === $newpath)$newname = "{$info['filename']} copy.{$info['extension']}";
+          $basename = $info['basename'];
+          if($path === $newpath) {
+            $filename = $info['filename'];
+            $ext = $info['extension'];
+            $dir = str_replace($basename,"",$path);
+            $name = "$filename";
+            while(file_exists("$dir/$name.$ext")) {
+              $name .= " copy";
+            }
+            $newname = "$name.$ext";
+          } else $newname = $basename;
   				copy( "$path/$file", "$newpath/$newname" );
   			}
       }
