@@ -1,6 +1,7 @@
 <?php
 include_once "../src/Files.php";
 $files = new Files::getInstance();
+$files->delete("files",false);
 $files->dir("files");
 $files->path("files");
 $files->dir("directory");

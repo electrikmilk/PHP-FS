@@ -203,19 +203,19 @@ class Files {
 			else return NULL;
 		}
 	}
-	public function copy($item, $newpath) {
+	public function copy($item, $newpath, $force = false) {
 		$path = $this->path;
 		if (is_dir($this->path) && $item) $path = "$path/$item";
-		if (file_exists($path)) return $this->transfer("copy", $path, $newpath);
+		if (file_exists($path)) return $this->transfer("copy", $path, $newpath, $force);
 		else return NULL;
 	}
-	public function move($item, $newpath) {
+	public function move($item, $newpath, $force = false) {
 		$path = $this->path;
 		if ($item) $path = "$path/$item";
-		if (file_exists($path)) return $this->transfer("move", $path, $newpath);
+		if (file_exists($path)) return $this->transfer("move", $path, $newpath, $force);
 		else return NULL;
 	}
-	private function transfer($action, $path, $newpath) {
+	private function transfer($action, $path, $newpath, $force) { // TODO: make it so you could write a funciton like this copy("file","directory"), not copy("file","directory/file");
 		if (is_file($path)) {
 			if ($action === "copy") {
 				if (!$newpath) {
@@ -232,14 +232,18 @@ class Files {
 					$newpath = str_replace($name, $newname, $path);
 				}
 				if ($path !== $newpath) {
-					if (copy($path, $newpath)) return true;
-					else return false;
+					if(file_exists($newpath) && $force === true) {
+						if (copy($path, $newpath)) return true;
+						else return false;
+					} else return false;
 				}
 				else return false;
 			}
 			else if ($newpath && $path !== $newpath) {
-				if (rename($path, $newpath)) return true;
-				else return false;
+				if(file_exists($newpath) && $force === true) {
+					if (rename($path, $newpath)) return true;
+					else return false;
+				} else return false;
 			}
 			else return false;
 		}
