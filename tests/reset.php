@@ -1,7 +1,7 @@
 <?php
 require_once "../src/Files.php";
 $files = Files::getInstance();
-$files->delete("files",false); // TODO: This does not turn off safe mode
+$files->delete("files",false);
 $files->dir("files");
 $files->path("files");
 $files->dir("directory");

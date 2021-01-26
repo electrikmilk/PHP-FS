@@ -7,13 +7,15 @@
 class Files {
     private static $instance = null;
     private $path;
+    private $script;
     private function __construct(string $path = null) {
+        $this->script = $_SERVER['DOCUMENT_ROOT'].trim(str_replace(pathinfo($_SERVER['SCRIPT_NAME'],PATHINFO_BASENAME),"",$_SERVER['SCRIPT_NAME']));
         try {
-            if(!$path)$path = $_SERVER['DOCUMENT_ROOT'].str_replace(pathinfo($_SERVER['SCRIPT_NAME'],PATHINFO_BASENAME),"",$_SERVER['SCRIPT_NAME']);
+            if(!$path)$path = $this->script;
             if (!file_exists($path)) throw new Exception("Path '$path' does not appear to exist.");
             if (!is_readable($path)) throw new Exception("Path '$path' does not appear to be readable.");
             if (!is_writeable($path)) trigger_error("Path '$path' appears to be read-only.", E_USER_NOTICE);
-            $this->path = $path;
+            $this->path = "$this->script$path";
         }
         catch(Exception $e) {
             die($e);
@@ -27,11 +29,11 @@ class Files {
     }
     public function path($path = null) {
         try {
-            if(!$path)$path = $_SERVER['DOCUMENT_ROOT'].str_replace(pathinfo($_SERVER['SCRIPT_NAME'],PATHINFO_BASENAME),"",$_SERVER['SCRIPT_NAME']);
+            if(!$path)$path = $this->script;
             if (!file_exists($path)) throw new Exception("Path '$path' does not appear to exist.");
             if (!is_readable($path)) throw new Exception("Path '$path' does not appear to be readable.");
             if (!is_writeable($path)) trigger_error("Path '$path' appears to be read-only.", E_USER_NOTICE);
-            $this->path = $path;
+            $this->path = "$this->script$path";
         }
         catch(Exception $e) {
             die($e);
@@ -62,14 +64,15 @@ class Files {
             } else return file_get_contents($this->path);
         }
     }
-    public function dir(string $name = null, string $time = null, bool $order = true) {
+    public function dir(string $name = null, string $time = null, bool $order = true, int $perm = 0755) {
         $path = $this->path;
         if ($name) $path = "$path/$name";
+        $path .= "/";
         if (is_file($this->path)) return;
         else {
             if (!file_exists($path)) {
                 if (!$name) return;
-                if (mkdir($path, 0777, true)) return true;
+                if (mkdir($path, $perm, true)) return true;
                 else return false;
             } else {
                 if (!is_dir($path)) return;
@@ -93,7 +96,7 @@ class Files {
                                             $time = filemtime("$path/$entry");
                                     }
                                     $mod = date("Y-m-d H:i:s", $time);
-                                    $files[$mod] = $this->info("$name/$entry");
+                                    $files[uniqid()."_".$mod] = $this->info("$entry");
                                 }
                             }
                             closedir($handle);
@@ -177,7 +180,7 @@ class Files {
             return $count;
         }
     }
-    public function empty(bool $name = false) {
+    public function empty(string $name = null) {
         $path = $this->path;
         if ($name) $path = "$path/$name";
         if (!is_dir($path)) return;
@@ -273,22 +276,22 @@ class Files {
         closedir($dir);
         return true;
     }
-    public function delete(string $name = null, bool $safe = true) {
+    public function delete(string $name = null, bool $safe = true, bool $sub = false) {
         $path = $this->path;
-        echo "$path/$name";
+        if ($name && $sub === false) $path = "$this->path/$name";
+        else $path = $name;
         if (is_dir($path)) {
-            if ($safe = false) {
-                if ($name) $path = "$this->path/$name";
+            if ($safe === false) {
                 if (substr($path, strlen($path) - 1, 1) != '/') $path.= '/';
                 $files = glob($path . '*', GLOB_MARK);
                 foreach ($files as $file) {
-                    if (is_dir($file)) self::delete($file);
+                    if (is_dir($file)) $this->delete($file,$safe,true);
                     else unlink($file);
                 }
                 if (rmdir($path)) return true;
                 else return false;
             } else {
-                if (rmdir($path)) return true;
+                if (rmdir($path) && $this->empty($name)) return true;
                 else return false;
             }
         } else {

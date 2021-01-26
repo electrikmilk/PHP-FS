@@ -11,7 +11,7 @@ Please let me know if you have suggestions on how the class can be better. I'm m
 Create class instance and set the path or current working directory.
 
 ```PHP
-$files = new Files::getInstance("path/to/files");
+$files = Files::getInstance("path/to/files");
 ```
 
 You can set the path as a file, but it's generally recommended to set it as a directory as you have access to more methods and it's less confusing.
