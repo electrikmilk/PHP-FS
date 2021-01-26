@@ -16,19 +16,21 @@ $files = Files::getInstance("path/to/files");
 
 You can set the path as a file, but it's generally recommended to set it as a directory as you have access to more methods and it's less confusing.
 
-Specifying no path will default path to `__DIR__` (cwd of script that class is included on).
+Specifying no path will default path to cwd of script that class is included on.
 
 ### Instance will `die()` and not be instantiated if...
-- Path does not appear to exist
-- Path does not appear to be readable
 
-*The class will still instantiate if path is read-only. You will get a NOTICE if so, and methods that write will return false.*
+-   Path does not appear to exist
+-   Path does not appear to be readable
+
+_The class will still instantiate if path is read-only. You will get a NOTICE if so, and methods that write will return false._
 
 ### All methods are set to return requested data, a boolean, or NULL:
-- data (string or array) = data you requested using file(), info(), or dir() for example
-- bool = true meaning something went right, false meaning something went wrong
-- NULL = something already exists or does not exist
-- empty = usually means you ran a method on someting it wasn't meant for (eg. count() is for directories not files)
+
+-   data (string or array) = data you requested using file(), info(), or dir() for example
+-   bool = true meaning something went right, false meaning something went wrong
+-   NULL = something already exists or does not exist
+-   empty = usually means you ran a method on someting it wasn't meant for (eg. count() is for directories not files)
 
 <hr/>
 
