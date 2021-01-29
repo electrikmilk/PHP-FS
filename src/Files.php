@@ -8,14 +8,15 @@ class Files {
     private static $instance = null;
     private $path;
     private $script;
-    private function __construct(string $path = null) {
+    private function __construct(string $path = null, bool $absolute = true) {
         $this->script = $_SERVER['DOCUMENT_ROOT'].trim(str_replace(pathinfo($_SERVER['SCRIPT_NAME'],PATHINFO_BASENAME),"",$_SERVER['SCRIPT_NAME']));
         try {
             if(!$path)$path = $this->script;
             if (!file_exists($path)) throw new Exception("Path '$path' does not appear to exist.");
             if (!is_readable($path)) throw new Exception("Path '$path' does not appear to be readable.");
             if (!is_writeable($path)) trigger_error("Path '$path' appears to be read-only.", E_USER_NOTICE);
-            $this->path = "$this->script$path";
+            if($absolute === true)$this->path = "$this->script$path";
+            else $this->path = $path;
         }
         catch(Exception $e) {
             die($e);
@@ -179,6 +180,12 @@ class Files {
             closedir($dir);
             return $count;
         }
+    }
+    public function exists(string $name = null) {
+      $path = $this->path;
+      if($name)$path .= "/$name";
+      if(file_exists($path))return true;
+      else return false;
     }
     public function empty(string $name = null) {
         $path = $this->path;
